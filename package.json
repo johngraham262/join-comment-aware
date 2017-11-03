@@ -2,7 +2,7 @@
   "name": "join-comment-aware",
   "displayName": "join-comment-aware",
   "description": "When joining lines, delete preceding comment blocks.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "johngraham262",
   "engines": {
     "vscode": "^1.17.0"

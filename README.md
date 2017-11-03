@@ -35,7 +35,7 @@ To replace the default join command *without* vim mode (`ctrl+j`), add this to y
   ...
   {
     "key": "ctrl+j",
-    "command": "extensions.joinCommentAware",
+    "command": "joinCommentAware.join",
     "when": "terminalFocus"
   }
 ]
@@ -51,7 +51,7 @@ To replace the default join command *with* vim mode (`shift+j`), add this to you
       "after": [],
       "commands": [
         {
-          "command": "extension.joinCommentAware",
+          "command": "joinCommentAware.join",
           "args": []
         }
       ]
@@ -82,6 +82,10 @@ Initial join-comment-aware release.
 ## Motivation
 
 I've been thinking about switching from vim to vscode and noticed the line-joiner could use some improvement. And I saw [this issue](https://github.com/Microsoft/vscode/issues/17553) that other folks have the same feedback. I also was inspired by the [original vscode join](https://github.com/wmaurer/vscode-join-lines), which got integrated directly into the editor.
+
+### 0.0.3
+
+Tweak README example.
 
 ### 0.0.2
 
