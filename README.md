@@ -2,7 +2,7 @@
 
 `join-comment-aware` will join lines and remove extraneous comment indicators. Previously when joining lines (e.g. via `ctrl+j` or `shift+j` in vim mode), comment characters are kept and you'll have to remove them manually.
 
-![demo](Screenshots/demo.gif)
+![demo](images/demo.gif)
 
 Lines to join:
 
@@ -82,6 +82,10 @@ Initial join-comment-aware release.
 ## Motivation
 
 I've been thinking about switching from vim to vscode and noticed the line-joiner could use some improvement. And I saw [this issue](https://github.com/Microsoft/vscode/issues/17553) that other folks have the same feedback. I also was inspired by the [original vscode join](https://github.com/wmaurer/vscode-join-lines), which got integrated directly into the editor.
+
+### 0.0.2
+
+Add icons. Update version so VS Marketplace can udpate.
 
 ### 0.0.1
 
