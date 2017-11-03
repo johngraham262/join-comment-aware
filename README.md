@@ -1,6 +1,8 @@
-# join-comment-aware README
+# join-comment-aware
 
-`join-comment-aware` will join lines and remove extraneous comment indicators. Normally when joining lines (e.g. via `ctrl+j` or `shift+j` in vim mode), comment characters are kept and you'll have to remove them manually.
+`join-comment-aware` will join lines and remove extraneous comment indicators. Previously when joining lines (e.g. via `ctrl+j` or `shift+j` in vim mode), comment characters are kept and you'll have to remove them manually.
+
+![demo](Screenshots/demo.gif)
 
 Lines to join:
 
@@ -21,28 +23,66 @@ New join functionality:
 # This is a comment and this is the 2nd line
 ```
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
 ## Suggested Installation
 
-I'd recomment replacing your normal join command (e.g. `ctrl+j` or `shift+j` in vim mode) with `join-comment-aware`. If a file type isn't recognized, it performs the default behavior as before.
+This isn't available through the vscode standard installation. You can install it manually by downloading a zip of this repo and [adding it to your extensions directory](https://code.visualstudio.com/docs/extensions/example-hello-world#_installing-your-extension-locally).
+
+I'd recommend replacing your normal join command (e.g. `ctrl+j` or `shift+j` in vim mode) with `join-comment-aware`. If a file type isn't recognized, it performs the default behavior as before.
+
+To replace the default join command *without* vim mode (`ctrl+j`), add this to your `keybindings.json`:
+```
+[
+  ...
+  {
+    "key": "ctrl+j",
+    "command": "extensions.joinCommentAware",
+    "when": "terminalFocus"
+  }
+]
+```
+
+To replace the default join command *with* vim mode (`shift+j`), add this to your `settings.json`:
+```
+{
+  ...
+  "vim.otherModesKeyBindingsNonRecursive": [
+    {
+      "before": ["J"],
+      "after": [],
+      "commands": [
+        {
+          "command": "extension.joinCommentAware",
+          "args": []
+        }
+      ]
+    }
+  ]
+}
+```
+
 
 ## Known Issues
 
-Only supports a few file-types at the moment.
+The following file types are supported with comment-awareness joining. Otherwise, default join behavior will take over.
+
+- ruby
+- python
+- javascript
+- java
+- json
+- csharp
+- cpp
+- go
+- php
 
 ## Release Notes
 
 Initial join-comment-aware release.
 
-### 1.0.0
+## Motivation
+
+I've been thinking about switching from vim to vscode and noticed the line-joiner could use some improvement. And I saw [this issue](https://github.com/Microsoft/vscode/issues/17553) that other folks have the same feedback. I also was inspired by the [original vscode join](https://github.com/wmaurer/vscode-join-lines), which got integrated directly into the editor.
+
+### 0.0.1
 
 Initial release of `join-comment-aware`

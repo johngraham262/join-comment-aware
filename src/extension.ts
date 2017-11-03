@@ -1,53 +1,9 @@
-/*
 'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
-const vscode = require('vscode');
-function activate(context) {
-  console.log('Congratulations, your extension "join-comment-aware" is now active!');
-  let disposable = vscode.commands.registerCommand('extension.joinCommentAware', () => {
-    var editor = vscode.window.activeTextEditor;
-    if (!editor || editor.selections.length !== 1) {
-      return;
-    }
-    // editor.edit
-    var selection = editor.selection;
-    var text = editor.document.getText(selection);
-
-    if (text === '') {
-      selection = new Selection();
-    }
-
-    console.log('BEGIN');
-    console.log('text: ' + text);
-
-    var newText = text.replace(/(\s*[\r\n|\n|\r]\s*)/gm, ' ');
-    console.log('newText: ' + newText);
-    console.log('END');
-
-    // var beginningLine = selection.start.line
-    // var endLine = selection.end.line
-
-    editor.edit(editBuilder => {
-      editBuilder.replace(selection, newText);
-    });
-    // vscode.window.showInformationMessage('Selected text: ' + text);
-  });
-  context.subscriptions.push(disposable);
-}
-
-exports.activate = activate;
-// this method is called when your extension is deactivated
-function deactivate() {}
-exports.deactivate = deactivate;
-//# sourceMappingURL=extension.js.map
-*/
-
-'use strict';
-const vscode = require('vscode');
+import * as vscode from 'vscode';
 const whitespaceAtEndOfLine = /\s*$/;
 
 function activate(context) {
-  let disposable = vscode.commands.registerCommand('extension.joinCommentAware', () => {
+  let disposable = vscode.commands.registerCommand('joinCommentAware.join', () => {
     var textEditor = vscode.window.activeTextEditor;
     const document = textEditor.document;
 

@@ -8,15 +8,19 @@
     "vscode": "^1.17.0"
   },
   "categories": ["Other"],
-  "activationEvents": ["onCommand:extension.joinCommentAware"],
+  "activationEvents": ["onCommand:joinCommentAware.join"],
   "main": "./out/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.joinCommentAware",
+        "command": "joinCommentAware.join",
         "title": "Join Comment Aware"
       }
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johngraham262/join-comment-aware"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
