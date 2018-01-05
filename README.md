@@ -25,7 +25,7 @@ New join functionality:
 
 ## Suggested Installation
 
-This isn't available through the vscode standard installation. You can install it manually by downloading a zip of this repo and [adding it to your extensions directory](https://code.visualstudio.com/docs/extensions/example-hello-world#_installing-your-extension-locally).
+This is available through the vscode standard installation and in the [vscode Marketplace](https://marketplace.visualstudio.com/items?itemName=johngraham262.join-comment-aware).
 
 I'd recommend replacing your normal join command (e.g. `ctrl+j` or `shift+j` in vim mode) with `join-comment-aware`. If a file type isn't recognized, it performs the default behavior as before.
 
