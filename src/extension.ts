@@ -115,7 +115,7 @@ function isRangeSimplyCursorPosition(range: vscode.Range): boolean {
 }
 
 function textBeginsWithComment(regex: RegExp, text: string): boolean {
-]  return regex.test(text);
+  return regex.test(text);
 }
 
 function joinLineWithNext(
@@ -175,11 +175,14 @@ function commentRegexByLanguage(languageId: string): RegExp | null {
       return /^["""|#|\s*]*["""|#]["""|#|\s*]/;
     case "cpp":
     case "csharp":
+    case "flow":
     case "go":
     case "java":
     case "javascript":
     case "json":
     case "php":
+    case "typescript":
+    case "typescriptreact":
       return /^[(\/\/)|\s]*(\/\/)[(\/\/)|\s]*/;
   }
   return null;
