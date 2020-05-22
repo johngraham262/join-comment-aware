@@ -1,90 +1,105 @@
-'use strict';
-import * as vscode from 'vscode';
+"use strict";
+import * as vscode from "vscode";
 const whitespaceAtEndOfLine = /\s*$/;
 
 function activate(context) {
-  let disposable = vscode.commands.registerCommand('joinCommentAware.join', () => {
-    var textEditor = vscode.window.activeTextEditor;
-    const document = textEditor.document;
+  let disposable = vscode.commands.registerCommand(
+    "joinCommentAware.join",
+    () => {
+      var textEditor = vscode.window.activeTextEditor;
+      const document = textEditor.document;
 
-    const newSelections: { numLinesRemoved: number; selection: vscode.Selection }[] = [];
+      const newSelections: {
+        numLinesRemoved: number;
+        selection: vscode.Selection;
+      }[] = [];
 
-    textEditor
-      .edit(editBuilder => {
-        textEditor.selections
-          .filter(selection => selection.end.line !== document.lineCount - 1)
-          .forEach(selection => {
-            if (isRangeSimplyCursorPosition(selection)) {
-              const newSelectionEnd =
-                document.lineAt(selection.start.line).range.end.character -
-                joinLineWithNext(selection.start.line, editBuilder, document).whitespaceLengthAtEnd;
-              newSelections.push({
-                numLinesRemoved: 1,
-                selection: new vscode.Selection(
-                  selection.start.line,
-                  newSelectionEnd,
-                  selection.end.line,
-                  newSelectionEnd
-                ),
-              });
-            } else if (isRangeOnOneLine(selection)) {
-              joinLineWithNext(selection.start.line, editBuilder, document);
-              newSelections.push({ numLinesRemoved: 1, selection });
-            } else {
-              const numberOfCharactersOnFirstLine = document.lineAt(selection.start.line).range.end
-                .character;
-              let endCharacterOffset = 0;
-              for (
-                let lineIndex = selection.start.line;
-                lineIndex <= selection.end.line - 1;
-                lineIndex++
-              ) {
-                const charactersInLine =
-                  lineIndex == selection.end.line - 1
-                    ? selection.end.character + 1
-                    : document.lineAt(lineIndex + 1).range.end.character + 1;
-                const whitespaceLengths = joinLineWithNext(lineIndex, editBuilder, document);
-                endCharacterOffset +=
-                  charactersInLine -
-                  whitespaceLengths.whitespaceLengthAtEnd -
-                  whitespaceLengths.whitespaceLengthAtStart;
+      textEditor
+        .edit((editBuilder) => {
+          textEditor.selections
+            .filter(
+              (selection) => selection.end.line !== document.lineCount - 1
+            )
+            .forEach((selection) => {
+              if (isRangeSimplyCursorPosition(selection)) {
+                const newSelectionEnd =
+                  document.lineAt(selection.start.line).range.end.character -
+                  joinLineWithNext(selection.start.line, editBuilder, document)
+                    .whitespaceLengthAtEnd;
+                newSelections.push({
+                  numLinesRemoved: 1,
+                  selection: new vscode.Selection(
+                    selection.start.line,
+                    newSelectionEnd,
+                    selection.end.line,
+                    newSelectionEnd
+                  ),
+                });
+              } else if (isRangeOnOneLine(selection)) {
+                joinLineWithNext(selection.start.line, editBuilder, document);
+                newSelections.push({ numLinesRemoved: 1, selection });
+              } else {
+                const numberOfCharactersOnFirstLine = document.lineAt(
+                  selection.start.line
+                ).range.end.character;
+                let endCharacterOffset = 0;
+                for (
+                  let lineIndex = selection.start.line;
+                  lineIndex <= selection.end.line - 1;
+                  lineIndex++
+                ) {
+                  const charactersInLine =
+                    lineIndex == selection.end.line - 1
+                      ? selection.end.character + 1
+                      : document.lineAt(lineIndex + 1).range.end.character + 1;
+                  const whitespaceLengths = joinLineWithNext(
+                    lineIndex,
+                    editBuilder,
+                    document
+                  );
+                  endCharacterOffset +=
+                    charactersInLine -
+                    whitespaceLengths.whitespaceLengthAtEnd -
+                    whitespaceLengths.whitespaceLengthAtStart;
+                }
+                newSelections.push({
+                  numLinesRemoved: selection.end.line - selection.start.line,
+                  selection: new vscode.Selection(
+                    selection.start.line,
+                    selection.start.character,
+                    selection.start.line,
+                    numberOfCharactersOnFirstLine + endCharacterOffset
+                  ),
+                });
               }
-              newSelections.push({
-                numLinesRemoved: selection.end.line - selection.start.line,
-                selection: new vscode.Selection(
-                  selection.start.line,
-                  selection.start.character,
-                  selection.start.line,
-                  numberOfCharactersOnFirstLine + endCharacterOffset
-                ),
-              });
-            }
+            });
+        })
+        .then(() => {
+          const selections = newSelections.map((x, i) => {
+            const { numLinesRemoved, selection } = x;
+            const numPreviousLinesRemoved =
+              i == 0
+                ? 0
+                : newSelections
+                    .slice(0, i)
+                    .map((x) => x.numLinesRemoved)
+                    .reduce((a, b) => a + b);
+            const newLineNumber =
+              selection.start.line - numPreviousLinesRemoved;
+            return new vscode.Selection(
+              newLineNumber,
+              selection.start.character,
+              newLineNumber,
+              selection.end.character
+            );
           });
-      })
-      .then(() => {
-        const selections = newSelections.map((x, i) => {
-          const { numLinesRemoved, selection } = x;
-          const numPreviousLinesRemoved =
-            i == 0
-              ? 0
-              : newSelections
-                  .slice(0, i)
-                  .map(x => x.numLinesRemoved)
-                  .reduce((a, b) => a + b);
-          const newLineNumber = selection.start.line - numPreviousLinesRemoved;
-          return new vscode.Selection(
-            newLineNumber,
-            selection.start.character,
-            newLineNumber,
-            selection.end.character
-          );
-        });
 
-        if (selections.length > 0) {
-          textEditor.selections = selections;
-        }
-      });
-  });
+          if (selections.length > 0) {
+            textEditor.selections = selections;
+          }
+        });
+    }
+  );
 
   context.subscriptions.push(disposable);
 }
@@ -94,7 +109,9 @@ function isRangeOnOneLine(range: vscode.Range): boolean {
 }
 
 function isRangeSimplyCursorPosition(range: vscode.Range): boolean {
-  return isRangeOnOneLine(range) && range.start.character === range.end.character;
+  return (
+    isRangeOnOneLine(range) && range.start.character === range.end.character
+  );
 }
 
 function textBeginsWithComment(languageId: string, text: string): boolean {
@@ -107,12 +124,15 @@ function joinLineWithNext(
   editBuilder: vscode.TextEditorEdit,
   document: vscode.TextDocument
 ): { whitespaceLengthAtEnd: number; whitespaceLengthAtStart: number } {
-  const matchWhitespaceAtEnd = document.lineAt(line).text.match(whitespaceAtEndOfLine);
+  const matchWhitespaceAtEnd = document
+    .lineAt(line)
+    .text.match(whitespaceAtEndOfLine);
 
   var line1 = document.lineAt(line);
   var line2 = document.lineAt(line + 1);
 
-  var locationOfFirstNonCommentCharacter = line2.firstNonWhitespaceCharacterIndex;
+  var locationOfFirstNonCommentCharacter =
+    line2.firstNonWhitespaceCharacterIndex;
   if (
     languageIsSupported(document.languageId) &&
     textBeginsWithComment(document.languageId, line1.text)
@@ -122,10 +142,11 @@ function joinLineWithNext(
     if (textBeginsWithComment(document.languageId, line2.text)) {
       locationOfFirstNonCommentCharacter =
         line2.text.length -
-        line2.text.replace(commentRegexByLanguage(document.languageId), '').length;
+        line2.text.replace(commentRegexByLanguage(document.languageId), "")
+          .length;
     } else {
       locationOfFirstNonCommentCharacter =
-        line2.text.length - line2.text.replace(/^\s*/, '').length;
+        line2.text.length - line2.text.replace(/^\s*/, "").length;
     }
   }
 
@@ -136,30 +157,41 @@ function joinLineWithNext(
     locationOfFirstNonCommentCharacter
   );
 
-  editBuilder.replace(range, ' ');
+  editBuilder.replace(range, " ");
   return {
     whitespaceLengthAtEnd: matchWhitespaceAtEnd[0].length,
-    whitespaceLengthAtStart: document.lineAt(line + 1).firstNonWhitespaceCharacterIndex,
+    whitespaceLengthAtStart: document.lineAt(line + 1)
+      .firstNonWhitespaceCharacterIndex,
   };
 }
 
 function languageIsSupported(languageId: string): boolean {
   return (
-    ['ruby', 'python', 'javascript', 'java', 'json', 'csharp', 'cpp', 'go', 'php'].indexOf(
-      languageId
-    ) >= 0
+    [
+      "ruby",
+      "python",
+      "javascript",
+      "java",
+      "json",
+      "csharp",
+      "cpp",
+      "go",
+      "php",
+    ].indexOf(languageId) >= 0
   );
 }
 
 // Supported languages:
 //   https://code.visualstudio.com/docs/languages/identifiers
 function commentRegexByLanguage(languageId: string): RegExp {
-  if (languageId === 'ruby') {
+  if (languageId === "ruby") {
     return /^[#|\s*]*#[#|\s*]*/;
-  } else if (languageId === 'python') {
+  } else if (languageId === "python") {
     return /^["""|#|\s*]*["""|#]["""|#|\s*]/;
   } else if (
-    ['javascript', 'java', 'json', 'csharp', 'cpp', 'go', 'php'].indexOf(languageId) >= 0
+    ["javascript", "java", "json", "csharp", "cpp", "go", "php"].indexOf(
+      languageId
+    ) >= 0
   ) {
     return /^[(\/\/)|\s]*(\/\/)[(\/\/)|\s]*/;
   } else {

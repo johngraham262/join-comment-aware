@@ -7,8 +7,12 @@
   "engines": {
     "vscode": "^1.17.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onCommand:joinCommentAware.join"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:joinCommentAware.join"
+  ],
   "main": "./out/extension",
   "contributes": {
     "commands": [
