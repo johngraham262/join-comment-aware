@@ -114,9 +114,8 @@ function isRangeSimplyCursorPosition(range: vscode.Range): boolean {
   );
 }
 
-function textBeginsWithComment(languageId: string, text: string): boolean {
-  let regex = commentRegexByLanguage(languageId);
-  return regex.test(text);
+function textBeginsWithComment(regex: RegExp, text: string): boolean {
+]  return regex.test(text);
 }
 
 function joinLineWithNext(
@@ -133,16 +132,17 @@ function joinLineWithNext(
 
   var locationOfFirstNonCommentCharacter =
     line2.firstNonWhitespaceCharacterIndex;
+  const commentRegex = commentRegexByLanguage(document.languageId);
   if (
-    languageIsSupported(document.languageId) &&
-    textBeginsWithComment(document.languageId, line1.text)
+    commentRegex &&
+    textBeginsWithComment(commentRegex, line1.text)
   ) {
     // If first line is a comment, remove preceding comment block
     // (or white space) on the following line.
-    if (textBeginsWithComment(document.languageId, line2.text)) {
+    if (textBeginsWithComment(commentRegex, line2.text)) {
       locationOfFirstNonCommentCharacter =
         line2.text.length -
-        line2.text.replace(commentRegexByLanguage(document.languageId), "")
+        line2.text.replace(commentRegex, "")
           .length;
     } else {
       locationOfFirstNonCommentCharacter =
@@ -165,38 +165,24 @@ function joinLineWithNext(
   };
 }
 
-function languageIsSupported(languageId: string): boolean {
-  return (
-    [
-      "ruby",
-      "python",
-      "javascript",
-      "java",
-      "json",
-      "csharp",
-      "cpp",
-      "go",
-      "php",
-    ].indexOf(languageId) >= 0
-  );
-}
-
 // Supported languages:
 //   https://code.visualstudio.com/docs/languages/identifiers
-function commentRegexByLanguage(languageId: string): RegExp {
-  if (languageId === "ruby") {
-    return /^[#|\s*]*#[#|\s*]*/;
-  } else if (languageId === "python") {
-    return /^["""|#|\s*]*["""|#]["""|#|\s*]/;
-  } else if (
-    ["javascript", "java", "json", "csharp", "cpp", "go", "php"].indexOf(
-      languageId
-    ) >= 0
-  ) {
-    return /^[(\/\/)|\s]*(\/\/)[(\/\/)|\s]*/;
-  } else {
-    return /^/;
+function commentRegexByLanguage(languageId: string): RegExp | null {
+  switch (languageId) {
+    case "ruby":
+      return /^[#|\s*]*#[#|\s*]*/;
+    case "python":
+      return /^["""|#|\s*]*["""|#]["""|#|\s*]/;
+    case "cpp":
+    case "csharp":
+    case "go":
+    case "java":
+    case "javascript":
+    case "json":
+    case "php":
+      return /^[(\/\/)|\s]*(\/\/)[(\/\/)|\s]*/;
   }
+  return null;
 }
 
 exports.activate = activate;
