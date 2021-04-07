@@ -145,9 +145,20 @@ function joinLineWithNext(
 
 function languageIsSupported(languageId: string): boolean {
   return (
-    ['ruby', 'python', 'javascript', 'java', 'json', 'csharp', 'cpp', 'go', 'php'].indexOf(
-      languageId
-    ) >= 0
+    [
+      'ruby',
+      'python',
+      'javascript',
+      'javascriptreact',
+      'typescript',
+      'typescriptreact',
+      'java',
+      'json',
+      'csharp',
+      'cpp',
+      'go',
+      'php',
+    ].indexOf(languageId) >= 0
   );
 }
 
@@ -159,7 +170,18 @@ function commentRegexByLanguage(languageId: string): RegExp {
   } else if (languageId === 'python') {
     return /^["""|#|\s*]*["""|#]["""|#|\s*]/;
   } else if (
-    ['javascript', 'java', 'json', 'csharp', 'cpp', 'go', 'php'].indexOf(languageId) >= 0
+    [
+      'javascript',
+      'javascriptreact',
+      'typescript',
+      'typescriptreact',
+      'java',
+      'json',
+      'csharp',
+      'cpp',
+      'go',
+      'php',
+    ].indexOf(languageId) >= 0
   ) {
     return /^[(\/\/)|\s]*(\/\/)[(\/\/)|\s]*/;
   } else {
